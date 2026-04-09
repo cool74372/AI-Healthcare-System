@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h2>🦠 TB Detection</h2>
+    <p style="color:#666;">Upload chest X-ray to detect Tuberculosis</p>
+
+    <form action="/predict_tb" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Analyze TB</button>
+    </form>
+
+    <br>
+    <a href="/"><button>⬅ Back</button></a>
+
+</div>
+
+{% endblock %}

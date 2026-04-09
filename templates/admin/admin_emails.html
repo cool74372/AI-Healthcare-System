@@ -1,0 +1,107 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Emails{% endblock %}
+{% block page_title %}✉️ Email Monitoring{% endblock %}
+
+{% block content %}
+<!-- Summary Badges -->
+<div style="display:flex;gap:14px;margin-bottom:26px;flex-wrap:wrap">
+  <div style="background:#d1fae5;border-radius:12px;padding:14px 22px;display:flex;align-items:center;gap:10px">
+    <span style="font-size:1.4rem">✅</span>
+    <div>
+      <div style="font-size:1.4rem;font-weight:800;color:#065f46;line-height:1">
+        {{ emails | selectattr('status','equalto','sent') | list | length }}
+      </div>
+      <div style="font-size:.78rem;color:#047857;font-weight:600;text-transform:uppercase">Sent on this page</div>
+    </div>
+  </div>
+  <div style="background:#fee2e2;border-radius:12px;padding:14px 22px;display:flex;align-items:center;gap:10px">
+    <span style="font-size:1.4rem">❌</span>
+    <div>
+      <div style="font-size:1.4rem;font-weight:800;color:#991b1b;line-height:1">
+        {{ emails | selectattr('status','equalto','failed') | list | length }}
+      </div>
+      <div style="font-size:.78rem;color:#b91c1c;font-weight:600;text-transform:uppercase">Failed on this page</div>
+    </div>
+  </div>
+  <div style="background:#ede9fe;border-radius:12px;padding:14px 22px;display:flex;align-items:center;gap:10px">
+    <span style="font-size:1.4rem">📊</span>
+    <div>
+      <div style="font-size:1.4rem;font-weight:800;color:#5b21b6;line-height:1">{{ total }}</div>
+      <div style="font-size:.78rem;color:#6d28d9;font-weight:600;text-transform:uppercase">Total Logs</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  {% if emails %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Recipient Email</th>
+          <th>Report</th>
+          <th>Status</th>
+          <th>Message</th>
+          <th>Sent At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in emails %}
+        <tr>
+          <td style="color:#94a3b8;font-size:.82rem">{{ e.id }}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:1rem">📧</span>
+              <span style="font-weight:500">{{ e.user_email }}</span>
+            </div>
+          </td>
+          <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            {% if e.report_path %}
+            <a href="{{ e.report_path }}" download style="color:#6366f1;text-decoration:none;font-size:.82rem;font-weight:600">⬇ Download</a>
+            {% else %}
+            <span style="color:#94a3b8;font-size:.82rem">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if e.status == 'sent' %}
+              <span class="badge success">✓ Sent</span>
+            {% else %}
+              <span class="badge danger">✗ Failed</span>
+            {% endif %}
+          </td>
+          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.82rem;color:#475569"
+              title="{{ e.message }}">
+            {{ (e.message or '—')[:60] }}{% if e.message and e.message|length > 60 %}…{% endif %}
+          </td>
+          <td style="color:#64748b;font-size:.82rem">{{ e.timestamp[:16] if e.timestamp else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  {% if total_pages > 1 %}
+  <div class="pagination" style="margin-top:28px">
+    {% if page > 1 %}
+      <a href="{{ url_for('admin.admin_emails', page=page-1) }}">← Prev</a>
+    {% endif %}
+    {% for p in range(1, total_pages+1) %}
+      <a href="{{ url_for('admin.admin_emails', page=p) }}" class="{{ 'active' if p==page else '' }}">{{ p }}</a>
+    {% endfor %}
+    {% if page < total_pages %}
+      <a href="{{ url_for('admin.admin_emails', page=page+1) }}">Next →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div style="text-align:center;padding:60px 20px;color:#94a3b8">
+    <div style="font-size:3rem;margin-bottom:16px">✉️</div>
+    <p style="font-size:1.1rem;font-weight:600">No email logs yet</p>
+    <p style="font-size:.88rem;margin-top:6px">Email logs will appear here after users trigger the Email Report feature.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

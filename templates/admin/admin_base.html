@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Admin Panel{% endblock %} – AI Healthcare</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sidebar-w:260px;
+  --navy:#0f172a;
+  --navy2:#1e293b;
+  --accent:#6366f1;
+  --accent2:#818cf8;
+  --bg:#f1f5f9;
+  --white:#ffffff;
+  --text:#1e293b;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --success:#10b981;
+  --danger:#ef4444;
+  --warning:#f59e0b;
+  --radius:14px;
+  --shadow:0 4px 24px rgba(0,0,0,.07);
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar-w);background:var(--navy);min-height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;transition:.3s}
+.sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-logo h2{color:#fff;font-size:1.15rem;font-weight:800;line-height:1.3}
+.sidebar-logo span{font-size:.78rem;color:var(--accent2);font-weight:500}
+.nav-menu{padding:20px 12px;flex:1;display:flex;flex-direction:column;gap:4px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;color:rgba(255,255,255,.6);text-decoration:none;font-size:.9rem;font-weight:500;transition:.2s;cursor:pointer}
+.nav-item:hover,.nav-item.active{background:var(--accent);color:#fff}
+.nav-item .icon{font-size:1.1rem;width:22px;text-align:center}
+.sidebar-footer{padding:16px 12px;border-top:1px solid rgba(255,255,255,.08)}
+
+/* ── MAIN ── */
+.main-wrap{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden}
+.topbar{background:var(--white);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:90}
+.topbar h1{font-size:1.3rem;font-weight:700;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.admin-badge{background:var(--accent);color:#fff;padding:6px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.page-body{padding:32px;flex:1}
+
+/* ── CARDS ── */
+.card{background:var(--white);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:22px;margin-bottom:32px}
+.stat-card{background:var(--white);border-radius:var(--radius);padding:24px 28px;box-shadow:var(--shadow);display:flex;align-items:center;gap:20px;border-left:4px solid var(--accent)}
+.stat-card.green{border-color:var(--success)}
+.stat-card.red{border-color:var(--danger)}
+.stat-card.yellow{border-color:var(--warning)}
+.stat-icon{font-size:2rem;width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stat-icon.purple{background:#ede9fe}
+.stat-icon.green{background:#d1fae5}
+.stat-icon.red{background:#fee2e2}
+.stat-icon.yellow{background:#fef3c7}
+.stat-val{font-size:2rem;font-weight:800;line-height:1}
+.stat-lbl{font-size:.82rem;color:var(--muted);font-weight:500;margin-top:4px}
+
+/* ── TABLES ── */
+.table-wrap{overflow-x:auto;margin-top:0}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+thead tr{border-bottom:2px solid var(--border)}
+thead th{padding:12px 16px;text-align:left;font-weight:700;color:var(--muted);text-transform:uppercase;font-size:.75rem;letter-spacing:.5px}
+tbody tr{border-bottom:1px solid var(--border);transition:.15s}
+tbody tr:hover{background:#f8fafc}
+td{padding:13px 16px;color:var(--text)}
+.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.badge.success{background:#d1fae5;color:#065f46}
+.badge.danger{background:#fee2e2;color:#991b1b}
+.badge.mild{background:#d1fae5;color:#065f46}
+.badge.moderate{background:#fef3c7;color:#92400e}
+.badge.severe,.badge.critical{background:#fee2e2;color:#991b1b}
+
+/* ── FORMS / SEARCH ── */
+.filter-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.filter-bar input,.filter-bar select{padding:9px 14px;border-radius:9px;border:1px solid var(--border);font-size:.88rem;font-family:'Inter',sans-serif;color:var(--text);outline:none;background:var(--white)}
+.filter-bar input:focus,.filter-bar select:focus{border-color:var(--accent)}
+.btn{padding:9px 20px;border-radius:9px;border:none;cursor:pointer;font-size:.88rem;font-weight:600;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:.2s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#4f46e5}
+.btn-sm{padding:5px 12px;font-size:.78rem;border-radius:7px}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-outline:hover{background:var(--bg)}
+
+/* ── CHARTS ── */
+.charts-grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:22px;margin-bottom:32px}
+.chart-card{background:var(--white);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);width:100%;overflow:hidden}
+.chart-card h3{font-size:1rem;font-weight:700;margin-bottom:20px;color:var(--text)}
+.chart-wrap{position:relative;height:220px}
+
+/* ── PAGINATION ── */
+.pagination{display:flex;gap:8px;justify-content:center;margin-top:24px}
+.pagination a{padding:7px 14px;border-radius:8px;border:1px solid var(--border);color:var(--text);text-decoration:none;font-size:.85rem;font-weight:500}
+.pagination a.active,.pagination a:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ── FLASH ── */
+.flash-bar{padding:12px 24px;margin-bottom:16px;border-radius:10px;font-size:.88rem;font-weight:600}
+.flash-bar.error{background:#fee2e2;color:#991b1b}
+.flash-bar.success{background:#d1fae5;color:#065f46}
+
+/* ── RESPONSIVE ── */
+@media(max-width:860px){
+  .sidebar{width:68px}
+  .sidebar-logo h2,.sidebar-logo span,.nav-item span{display:none}
+  .nav-item{justify-content:center;padding:12px}
+  .main-wrap{margin-left:68px}
+  .charts-grid{grid-template-columns:1fr}
+  .page-body{padding:20px}
+}
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h2>🏥 AI Healthcare</h2>
+    <span>Admin Panel</span>
+  </div>
+  <nav class="nav-menu">
+    <a class="nav-item {% if request.endpoint=='admin.admin_dashboard' %}active{% endif %}" href="{{ url_for('admin.admin_dashboard') }}">
+      <span class="icon">📊</span><span>Dashboard</span>
+    </a>
+    <a class="nav-item {% if request.endpoint=='admin.admin_users' %}active{% endif %}" href="{{ url_for('admin.admin_users') }}">
+      <span class="icon">👤</span><span>Users</span>
+    </a>
+    <a class="nav-item {% if request.endpoint=='admin.admin_reports' %}active{% endif %}" href="{{ url_for('admin.admin_reports') }}">
+      <span class="icon">📄</span><span>Reports</span>
+    </a>
+    <a class="nav-item {% if request.endpoint=='admin.admin_emails' %}active{% endif %}" href="{{ url_for('admin.admin_emails') }}">
+      <span class="icon">✉️</span><span>Emails</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <a class="nav-item" href="{{ url_for('admin.admin_logout') }}">
+      <span class="icon">🚪</span><span>Logout</span>
+    </a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap">
+  <header class="topbar">
+    <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+    <div class="topbar-right">
+      <span class="admin-badge">⚙️ {{ session.get('admin_name', 'Admin') }}</span>
+    </div>
+  </header>
+  <main class="page-body">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}{% for cat, msg in messages %}
+        <div class="flash-bar {{ cat }}">{{ msg }}</div>
+      {% endfor %}{% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

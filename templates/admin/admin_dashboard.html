@@ -1,0 +1,145 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}📊 Dashboard Overview{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- STAT CARDS -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon purple">👥</div>
+    <div>
+      <div class="stat-val">{{ total_users }}</div>
+      <div class="stat-lbl">Registered Users</div>
+    </div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-icon green">📄</div>
+    <div>
+      <div class="stat-val">{{ total_reports }}</div>
+      <div class="stat-lbl">Reports Generated</div>
+    </div>
+  </div>
+  <div class="stat-card yellow">
+    <div class="stat-icon yellow">✉️</div>
+    <div>
+      <div class="stat-val">{{ emails_ok }}</div>
+      <div class="stat-lbl">Emails Sent</div>
+    </div>
+  </div>
+  <div class="stat-card red">
+    <div class="stat-icon red">⚠️</div>
+    <div>
+      <div class="stat-val">{{ emails_fail }}</div>
+      <div class="stat-lbl">Emails Failed</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="charts-grid">
+  <div class="chart-card">
+    <h3>🩺 Report Distribution</h3>
+    <div class="chart-wrap">
+      <canvas id="diseaseChart"></canvas>
+    </div>
+  </div>
+  <div class="chart-card">
+    <h3>📈 Daily Activity (Last 7 Days)</h3>
+    <div class="chart-wrap">
+      <canvas id="dailyChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- RECENT REPORTS TABLE -->
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+    <h3 style="font-size:1rem;font-weight:700">🕐 Recent Reports</h3>
+    <a href="{{ url_for('admin.admin_reports') }}" class="btn btn-outline btn-sm">View All →</a>
+  </div>
+  {% if recent_reports %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Disease</th>
+          <th>Result</th>
+          <th>Severity</th>
+          <th>Confidence</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in recent_reports %}
+        <tr>
+          <td><strong>{{ r.user_name or '—' }}</strong></td>
+          <td>{{ r.disease }}</td>
+          <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.result }}</td>
+          <td><span class="badge {{ r.severity|lower if r.severity else 'mild' }}">{{ r.severity or 'N/A' }}</span></td>
+          <td>{{ r.confidence }}%</td>
+          <td style="color:#64748b;font-size:.82rem">{{ r.created_at[:16] if r.created_at else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p style="color:#94a3b8;text-align:center;padding:30px 0">No reports generated yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const dLabels = {{ chart_labels | tojson }};
+  const dData = {{ chart_data   | tojson }};
+  const aLabels = {{ daily_labels | tojson }};
+  const aData = {{ daily_data   | tojson }};
+
+  new Chart(document.getElementById('diseaseChart'), {
+    type: 'doughnut',
+    data: {
+      labels: dLabels.length ? dLabels : ['No Data'],
+      datasets: [{
+        data: dData.length ? dData : [1],
+        backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12 }, padding: 16 } } }
+    }
+  });
+
+  new Chart(document.getElementById('dailyChart'), {
+    type: 'bar',
+    data: {
+      labels: aLabels.length ? aLabels : ['No Data'],
+      datasets: [{
+        label: 'Reports',
+        data: aData.length ? aData : [0],
+        backgroundColor: 'rgba(99,102,241,.18)',
+        borderColor: '#6366f1',
+        borderWidth: 2,
+        borderRadius: 8,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter' } }, grid: { color: '#f1f5f9' } },
+        x: { ticks: { font: { family: 'Inter', size: 11 } }, grid: { display: false } }
+      }
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card" style="max-width:1000px;">
+
+    <!-- TITLE -->
+    <h1 style="color:#007BFF;">🧠 AI Healthcare System</h1>
+    <p style="color:#666; font-size:16px;">
+        Disease detection using Artificial Intelligence
+    </p>
+
+    <!-- FEATURES GRID -->
+    <div style="display:flex; gap:30px; justify-content:center; flex-wrap:wrap; margin-top:40px;">
+
+        <!-- XRAY -->
+        <a href="/xray" style="text-decoration:none;">
+            <div style="width:250px; padding:25px; border-radius:15px;
+                        background:#ffffff;
+                        box-shadow:0px 5px 15px rgba(0,0,0,0.1);
+                        transition:0.3s;">
+
+                <h2>🫁</h2>
+                <h3>Pneumonia Detection</h3>
+                <p style="color:#666; font-size:14px;">
+                    Detect Pneumonia using chest X-ray images
+                </p>
+            </div>
+        </a>
+
+        <!-- TB -->
+        <a href="/tb" style="text-decoration:none;">
+            <div style="width:250px; padding:25px; border-radius:15px;
+                        background:#ffffff;
+                        box-shadow:0px 5px 15px rgba(0,0,0,0.1);
+                        transition:0.3s;">
+
+                <h2>🦠</h2>
+                <h3>TB Detection</h3>
+                <p style="color:#666; font-size:14px;">
+                    Identify Tuberculosis patterns from X-ray scans
+                </p>
+            </div>
+        </a>
+
+        <!-- VITALS -->
+        <a href="/vitals" style="text-decoration:none;">
+            <div style="width:250px; padding:25px; border-radius:15px;
+                        background:#ffffff;
+                        box-shadow:0px 5px 15px rgba(0,0,0,0.1);
+                        transition:0.3s;">
+
+                <h2>🩺</h2>
+                <h3>Vitals Prediction</h3>
+                <p style="color:#666; font-size:14px;">
+                    Analyze patient vitals to assess health risks
+                </p>
+            </div>
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

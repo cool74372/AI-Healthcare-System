@@ -1,0 +1,10 @@
+flask
+tensorflow
+numpy
+opencv-python
+pandas
+requests
+python-dotenv
+reportlab
+scikit-learn
+matplotlib

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Health Predictor</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            text-align: center;
+            color: white;
+        }
+
+        .container {
+            background: white;
+            color: black;
+            padding: 30px;
+            margin: 50px auto;
+            width: 400px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px gray;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #4facfe;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<h1>AI-Based Health Risk Prediction</h1>
+
+<div class="container">
+<form action="/predict" method="post">
+
+    <input name="Age" placeholder="Age">
+    <input name="Sex" placeholder="Sex (0=F, 1=M)">
+    <input name="ChestPainType" placeholder="Chest Pain Type">
+    <input name="RestingBP" placeholder="Blood Pressure">
+    <input name="Cholesterol" placeholder="Cholesterol">
+    <input name="FastingBS" placeholder="Fasting Blood Sugar">
+    <input name="RestingECG" placeholder="Resting ECG">
+    <input name="MaxHR" placeholder="Max Heart Rate">
+    <input name="ExerciseAngina" placeholder="Exercise Angina">
+    <input name="Oldpeak" placeholder="Old Peak">
+
+    <button type="submit">Predict</button>
+
+</form>
+
+<hr>
+
+<h3>Upload Chest X-ray</h3>
+
+<form action="/predict_image" method="post" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <button type="submit">Analyze X-ray</button>
+</form>
+</div>
+
+</body>
+</html>

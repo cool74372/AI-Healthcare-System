@@ -1,0 +1,80 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Users{% endblock %}
+{% block page_title %}👤 User Management{% endblock %}
+
+{% block content %}
+<div class="card">
+  <!-- Search bar -->
+  <form method="GET" action="{{ url_for('admin.admin_users') }}">
+    <div class="filter-bar" style="margin-bottom:24px">
+      <input type="text" name="q" value="{{ search }}" placeholder="🔍  Search by name or email…" style="flex:1;min-width:240px">
+      <button class="btn btn-primary" type="submit">Search</button>
+      {% if search %}
+        <a href="{{ url_for('admin.admin_users') }}" class="btn btn-outline">✕ Clear</a>
+      {% endif %}
+    </div>
+  </form>
+
+  <!-- Result meta -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <p style="font-size:.85rem;color:#64748b">
+      Showing <strong>{{ users|length }}</strong> of <strong>{{ total }}</strong> users
+      {% if search %} matching "<em>{{ search }}</em>"{% endif %}
+    </p>
+  </div>
+
+  {% if users %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Registered On</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td style="color:#94a3b8;font-size:.82rem">{{ u.id }}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.85rem;flex-shrink:0">
+                {{ u.name[0]|upper if u.name else '?' }}
+              </div>
+              <strong>{{ u.name }}</strong>
+            </div>
+          </td>
+          <td style="color:#475569">{{ u.email }}</td>
+          <td style="color:#64748b;font-size:.82rem">{{ u.created_at[:16] if u.created_at else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  {% if total_pages > 1 %}
+  <div class="pagination" style="margin-top:28px">
+    {% if page > 1 %}
+      <a href="{{ url_for('admin.admin_users', page=page-1, q=search) }}">← Prev</a>
+    {% endif %}
+    {% for p in range(1, total_pages+1) %}
+      <a href="{{ url_for('admin.admin_users', page=p, q=search) }}" class="{{ 'active' if p==page else '' }}">{{ p }}</a>
+    {% endfor %}
+    {% if page < total_pages %}
+      <a href="{{ url_for('admin.admin_users', page=page+1, q=search) }}">Next →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div style="text-align:center;padding:60px 20px;color:#94a3b8">
+    <div style="font-size:3rem;margin-bottom:16px">👤</div>
+    <p style="font-size:1.1rem;font-weight:600">No users found</p>
+    <p style="font-size:.88rem;margin-top:6px">{% if search %}Try a different search term.{% else %}No users have registered yet.{% endif %}</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

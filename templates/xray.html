@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h2>🫁 Pneumonia Detection</h2>
+    <p style="color:#666;">Upload chest X-ray to detect lung conditions</p>
+
+    <form action="/predict_xray" method="post" enctype="multipart/form-data">
+
+        <input type="file" name="file" id="fileInput" accept="image/*" required>
+
+        <img id="preview" style="display:none; width:250px;">
+
+        <p id="loadingText" style="display:none; color:#007BFF;">
+            🔍 Analyzing... Please wait
+        </p>
+
+        <button type="submit" onclick="showLoading()">Analyze</button>
+    </form>
+
+    <br>
+    <a href="/"><button>⬅ Back</button></a>
+
+</div>
+
+<script>
+    const fileInput = document.getElementById("fileInput");
+    const preview = document.getElementById("preview");
+
+    fileInput.onchange = function () {
+        const file = fileInput.files[0];
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+        }
+    };
+
+    function showLoading() {
+        document.getElementById("loadingText").style.display = "block";
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Reports{% endblock %}
+{% block page_title %}📄 Report Management{% endblock %}
+
+{% block content %}
+<div class="card">
+  <!-- Filters -->
+  <form method="GET" action="{{ url_for('admin.admin_reports') }}">
+    <div class="filter-bar" style="margin-bottom:24px">
+      <select name="disease">
+        <option value="">All Diseases</option>
+        <option value="Pneumonia"          {% if disease_filter=='Pneumonia' %}selected{% endif %}>🫁 Pneumonia</option>
+        <option value="Tuberculosis"       {% if disease_filter=='Tuberculosis' %}selected{% endif %}>🦠 Tuberculosis</option>
+        <option value="Cardiovascular Disease" {% if disease_filter=='Cardiovascular Disease' %}selected{% endif %}>❤️ Cardiovascular</option>
+      </select>
+      <select name="severity">
+        <option value="">All Severities</option>
+        <option value="Mild"     {% if severity_filter=='Mild' %}selected{% endif %}>🟢 Mild</option>
+        <option value="Moderate" {% if severity_filter=='Moderate' %}selected{% endif %}>🟡 Moderate</option>
+        <option value="Severe"   {% if severity_filter=='Severe' %}selected{% endif %}>🔴 Severe</option>
+      </select>
+      <button class="btn btn-primary" type="submit">Filter</button>
+      {% if disease_filter or severity_filter %}
+        <a href="{{ url_for('admin.admin_reports') }}" class="btn btn-outline">✕ Clear</a>
+      {% endif %}
+      <span style="margin-left:auto;font-size:.85rem;color:#64748b">
+        <strong>{{ total }}</strong> record{{ 's' if total != 1 }}
+      </span>
+    </div>
+  </form>
+
+  {% if reports %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>User</th>
+          <th>Disease</th>
+          <th>Result</th>
+          <th>Severity</th>
+          <th>Confidence</th>
+          <th>Date</th>
+          <th>PDF</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in reports %}
+        <tr>
+          <td style="color:#94a3b8;font-size:.82rem">{{ r.id }}</td>
+          <td><strong>{{ r.user_name or '—' }}</strong></td>
+          <td>
+            {% if r.disease == 'Pneumonia' %}🫁
+            {% elif r.disease == 'Tuberculosis' %}🦠
+            {% else %}❤️{% endif %}
+            {{ r.disease }}
+          </td>
+          <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.83rem;color:#475569">
+            {{ r.result }}
+          </td>
+          <td>
+            <span class="badge {{ r.severity|lower if r.severity else 'mild' }}">{{ r.severity or 'N/A' }}</span>
+          </td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:60px;height:6px;background:#e2e8f0;border-radius:6px;overflow:hidden">
+                <div style="width:{{ r.confidence }}%;height:100%;background:#6366f1;border-radius:6px"></div>
+              </div>
+              <span style="font-size:.82rem;color:#475569">{{ r.confidence }}%</span>
+            </div>
+          </td>
+          <td style="color:#64748b;font-size:.82rem">{{ r.created_at[:16] if r.created_at else '—' }}</td>
+          <td>
+            {% if r.report_path %}
+            <a href="{{ r.report_path }}" download class="btn btn-outline btn-sm" title="Download PDF">⬇ PDF</a>
+            {% else %}
+            <span style="color:#94a3b8;font-size:.82rem">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  {% if total_pages > 1 %}
+  <div class="pagination" style="margin-top:28px">
+    {% if page > 1 %}
+      <a href="{{ url_for('admin.admin_reports', page=page-1, disease=disease_filter, severity=severity_filter) }}">← Prev</a>
+    {% endif %}
+    {% for p in range(1, total_pages+1) %}
+      <a href="{{ url_for('admin.admin_reports', page=p, disease=disease_filter, severity=severity_filter) }}" class="{{ 'active' if p==page else '' }}">{{ p }}</a>
+    {% endfor %}
+    {% if page < total_pages %}
+      <a href="{{ url_for('admin.admin_reports', page=page+1, disease=disease_filter, severity=severity_filter) }}">Next →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div style="text-align:center;padding:60px 20px;color:#94a3b8">
+    <div style="font-size:3rem;margin-bottom:16px">📄</div>
+    <p style="font-size:1.1rem;font-weight:600">No reports found</p>
+    <p style="font-size:.88rem;margin-top:6px">Try adjusting filters or run a prediction from the main app.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
